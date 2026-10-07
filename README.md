@@ -23,6 +23,10 @@ This concept aligns with broader geospatial and data governance thinking around 
 - [OGC API Features](https://www.ogc.org/standard/ogcapi-features/)
 - [OGC API - Records](https://www.ogc.org/standard/ogcapi-records/)
 
+## Related documentation
+
+- [Extension overview](./EXTENSION.md)
+
 ## Demonstration scenario
 
 Three independent asset owners publish datasets that are later consolidated into a single asset view.
