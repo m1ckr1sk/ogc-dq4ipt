@@ -1,183 +1,165 @@
-Demonstrator Brief: Integrity, Provenance, Trust and Data Quality for Federated Asset Data
-Purpose
+# Demonstrator Brief: Integrity, Provenance, Trust and Data Quality for Federated Asset Data
 
-Create a lightweight demonstrator that showcases how Integrity, Provenance, Trust (IPT) and Data Quality (DQ) concepts can be applied to a federated asset data ecosystem.
+## Purpose
 
-The demonstrator should illustrate how multiple data owners can publish data, how data can be transformed and combined, and how consumers can access both the resulting data and evidence regarding:
+Create a lightweight demonstrator that shows how Integrity, Provenance, Trust (IPT) and Data Quality (DQ) concepts can be applied in a federated asset data ecosystem.
 
-Who supplied it
-When it was supplied
-How it was transformed
-Whether it has been altered
-The quality of the source data
-Whether it can be trusted for a given purpose
+The demonstrator illustrates how multiple data owners can publish data, how data can be transformed and combined, and how consumers can access both the resulting data and evidence relating to:
 
-The demonstrator should be technology-agnostic and focus on concepts rather than production-grade implementation.
+- who supplied it
+- when it was supplied
+- how it was transformed
+- whether it has been altered
+- the quality of the source data
+- whether it can be trusted for a given purpose
 
-Demonstration Scenario
+The demonstrator is intentionally technology-agnostic and focused on concepts rather than production-grade implementation.
 
-Three independent asset owners publish datasets.
+## Context and scope
 
-Asset Owner A - Water Utility
+This concept aligns with broader geospatial and data governance thinking around trusted data exchange and traceability. Relevant standards and initiatives include:
 
-Dataset:
+- [OGC Standards](https://www.ogc.org/standards/)
+- [OGC API Features](https://www.ogc.org/standard/ogcapi-features/)
+- [OGC API - Records](https://www.ogc.org/standard/ogcapi-records/)
 
-Water Mains
+## Demonstration scenario
 
+Three independent asset owners publish datasets that are later consolidated into a single asset view.
 
-Example attributes:
+| Asset owner | Dataset | Example attributes | Quality metadata |
+| --- | --- | --- | --- |
+| Water Utility | Water Mains | Asset ID, Pipe Material, Diameter, Installation Date, Geometry | Positional Accuracy: ±250mm; Completeness: 95%; Last Surveyed: 2024 |
+| Electricity Network | High Voltage Cables | Asset ID, Voltage, Installation Date, Geometry | Positional Accuracy: ±500mm; Completeness: 90%; Last Surveyed: 2021 |
+| Telecommunications Provider | Fibre Ducts | Asset ID, Duct Type, Capacity, Geometry | Positional Accuracy: ±100mm; Completeness: 98%; Last Surveyed: 2025 |
 
-Asset ID
-Pipe Material
-Diameter
-Installation Date
-Geometry
+## Demonstrated concepts
 
-
-Quality Metadata:
-
-Positional Accuracy: ±250mm
-Completeness: 95%
-Last Surveyed: 2024
-
-Asset Owner B - Electricity Network
-
-Dataset:
-
-High Voltage Cables
-
-
-Example attributes:
-
-Asset ID
-Voltage
-Installation Date
-Geometry
-
-
-Quality Metadata:
-
-Positional Accuracy: ±500mm
-Completeness: 90%
-Last Surveyed: 2021
-
-Asset Owner C - Telecommunications Provider
-
-Dataset:
-
-Fibre Ducts
-
-
-Example attributes:
-
-Asset ID
-Duct Type
-Capacity
-Geometry
-
-
-Quality Metadata:
-
-Positional Accuracy: ±100mm
-Completeness: 98%
-Last Surveyed: 2025
-
-Demonstrated Concepts
-1. Identity
+### 1. Identity
 
 Every asset owner receives a unique digital identity.
 
-Example:
+Examples:
 
-water-company-01
-power-network-01
-telecom-provider-01
+- `water-company-01`
+- `power-network-01`
+- `telecom-provider-01`
 
+The demonstrator should show that published datasets can be linked back to a verified source.
 
-The demonstrator must show that published datasets can be linked back to a verified source.
-
-2. Provenance
+### 2. Provenance
 
 Every dataset carries provenance information.
 
-Example:
+Example JSON:
 
+```json
 {
   "owner": "water-company-01",
   "created": "2026-01-12",
   "version": "1.0"
 }
-
+```
 
 The demonstrator should preserve provenance through all subsequent processing.
 
-3. Integrity
+### 3. Integrity
 
 When datasets are submitted:
 
-Generate a hash
-Store the hash alongside metadata
+- generate a hash
+- store the hash alongside metadata
 
-Example:
+Example JSON:
 
+```json
 {
   "sha256": "abc123..."
 }
-
+```
 
 Users should be able to verify that a dataset has not changed since publication.
 
-4. Data Quality
+### 4. Data quality
 
 A standard quality model should accompany every dataset.
 
-Example:
+Example JSON:
 
+```json
 {
   "accuracy": "250mm",
   "completeness": 95,
   "confidence": "high"
 }
-
+```
 
 Quality information must remain accessible after transformation.
 
-Transformation Service
+## High-level architecture
+
+```mermaid
+flowchart LR
+    subgraph Owners[Asset owners]
+        A1[Water Utility]
+        A2[Electricity Network]
+        A3[Telecom Provider]
+    end
+
+    subgraph Submit[Submission layer]
+        S[Dataset publication\nidentity + provenance + integrity]
+    end
+
+    P[Transformation / Consolidation Service]
+    D[Integrated Asset Dataset]
+    API[Public API]
+    UI[Trust Dashboard]
+
+    A1 -->|Publish| S
+    A2 -->|Publish| S
+    A3 -->|Publish| S
+
+    S -->|Dataset + quality metadata| P
+    P -->|Standardised assets| D
+    D --> API
+    D --> UI
+```
+
+## Transformation service
 
 Implement a simple processing service:
 
-Asset Consolidation Service
-
+### Asset Consolidation Service
 
 Inputs:
 
-Water assets
-Electricity assets
-Telecom assets
+- water assets
+- electricity assets
+- telecom assets
 
 Processing:
 
-Convert all datasets into a common model
-Standardise attribute names
-Merge into a single dataset
+- convert all datasets into a common model
+- standardise attribute names
+- merge into a single dataset
 
-Example:
+Example mapping:
 
-water-main        -> underground-asset
-hv-cable          -> underground-asset
-fibre-duct        -> underground-asset
-
+- `water-main` -> `underground-asset`
+- `hv-cable` -> `underground-asset`
+- `fibre-duct` -> `underground-asset`
 
 Output:
 
-Integrated Asset Dataset
+- Integrated Asset Dataset
 
-Provenance Recording
+### Provenance recording
 
 The processing service should automatically generate lineage metadata.
 
-Example:
+Example JSON:
 
+```json
 {
   "activity": "asset-consolidation",
   "inputs": [
@@ -187,49 +169,47 @@ Example:
   ],
   "output": "integrated-assets-v1"
 }
-
+```
 
 The user should be able to inspect the lineage chain from source dataset to final dataset.
 
-Trust Scoring
+## Trust scoring
 
 Generate a simple trust score using:
 
-Source Verification
-+
-Integrity Check
-+
-Data Quality
-+
-Data Freshness
-
+- source verification
+- integrity check
+- data quality
+- data freshness
 
 Example output:
 
+```json
 {
   "trustScore": 87,
   "rating": "High"
 }
+```
 
+This score is illustrative and intended to demonstrate how trust information may be surfaced to consumers.
 
-This score is illustrative only and intended to demonstrate how trust information may be surfaced to consumers.
-
-Public API
+## Public API
 
 Expose a small REST API.
 
-Asset Endpoint
-GET /assets
+### Asset endpoint
 
+`GET /assets`
 
 Returns consolidated assets.
 
-Provenance Endpoint
-GET /assets/{id}/provenance
+### Provenance endpoint
 
+`GET /assets/{id}/provenance`
 
 Returns:
 
+```json
 {
   "owner": "water-company-01",
   "suppliedDate": "2026-01-12",
@@ -238,81 +218,111 @@ Returns:
     "consolidation"
   ]
 }
+```
 
-Quality Endpoint
-GET /assets/{id}/quality
+### Quality endpoint
 
+`GET /assets/{id}/quality`
 
 Returns quality metadata.
 
-Integrity Endpoint
-GET /assets/{id}/integrity
+### Integrity endpoint
 
+`GET /assets/{id}/integrity`
 
 Returns:
 
+```json
 {
   "verified": true,
   "hash": "abc123..."
 }
+```
 
-Trust Endpoint
-GET /assets/{id}/trust
+### Trust endpoint
 
+`GET /assets/{id}/trust`
 
 Returns:
 
+```json
 {
   "score": 87,
   "rating": "High"
 }
+```
 
-Suggested User Interface
+## Suggested user interface
 
-A simple web application showing:
+A simple web application could show:
 
-Asset Catalogue
-Asset Owner
-Dataset
-Asset Count
-Trust Score
-Asset Detail
-Source organisation
-Quality metrics
-Integrity status
-Provenance chain
-Processing View
+- asset catalogue
+- asset owner
+- dataset
+- asset count
+- trust score
+- source organisation
+- quality metrics
+- integrity status
+- provenance chain
+- processing view
 
-Visual flow:
+### Visual flow
 
-Water Assets
-        \
-Electric Assets -----> Consolidation Service -----> Integrated Dataset
-        /
-Telecom Assets
+```mermaid
+flowchart LR
+    W[Water Assets] --> C[Consolidation Service]
+    E[Electric Assets] --> C
+    T[Telecom Assets] --> C
+    C --> D[Integrated Dataset]
+```
 
-Trust Dashboard
+### Trust dashboard
 
-For each dataset:
+For each dataset, the interface can display:
 
-✓ Identity Verified
-✓ Integrity Verified
-✓ Provenance Available
-✓ Quality Metadata Present
+- ✓ Identity Verified
+- ✓ Integrity Verified
+- ✓ Provenance Available
+- ✓ Quality Metadata Present
+- Trust Rating: High
 
-Trust Rating: High
+## Sequence view
 
-Success Criteria
+```mermaid
+sequenceDiagram
+    participant Owner as Data Owner
+    participant Store as Submission Service
+    participant Proc as Transformation Service
+    participant API as Public API
+    participant Consumer as Consumer
+
+    Owner->>Store: Publish dataset + quality metadata
+    Store-->>Owner: Return hash + provenance record
+    Store->>Proc: Dataset + lineage metadata
+    Proc->>API: Consolidated asset, quality, integrity, trust
+    Consumer->>API: Query /assets, /provenance, /quality, /integrity, /trust
+```
+
+## Success criteria
 
 The demonstrator successfully proves that:
 
-Multiple independent asset owners can publish data.
-Data ownership can be verified.
-Integrity checks detect tampering.
-Provenance survives transformation.
-Data quality metadata can be standardised and exposed.
-Trust indicators can be calculated and presented to users.
-Consumers can access data and trust evidence through APIs.
-Expected Outcome
+- multiple independent asset owners can publish data
+- data ownership can be verified
+- integrity checks detect tampering
+- provenance survives transformation
+- data quality metadata can be standardised and exposed
+- trust indicators can be calculated and presented to users
+- consumers can access data and trust evidence through APIs
 
-The demonstrator should provide a tangible example of how an asset data platform could evolve from simply publishing datasets to delivering verifiable, traceable, quality-assured and trustworthy data products, bringing together the concepts from OGC IPT and Data Quality initiatives in a form that is easy for stakeholders to understand and evaluate.
+## Expected outcome
+
+The demonstrator should provide a tangible example of how an asset data platform could evolve from simply publishing datasets to delivering verifiable, traceable, quality-assured and trustworthy data products. It brings together the concepts from OGC IPT and Data Quality initiatives in a way that is easy for stakeholders to understand and evaluate.
+
+## Related resources
+
+- [OGC Standards](https://www.ogc.org/standards/)
+- [OGC API Features](https://www.ogc.org/standard/ogcapi-features/)
+- [OGC API - Records](https://www.ogc.org/standard/ogcapi-records/)
+- [Open Geospatial Consortium](https://www.ogc.org/)
